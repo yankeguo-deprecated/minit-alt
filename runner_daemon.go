@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const KindDaemon = "daemon"
+
 type DaemonRunner struct {
 	Unit
 	logger *mlog.Logger

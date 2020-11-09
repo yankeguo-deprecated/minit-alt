@@ -84,7 +84,7 @@ func LoadArgsMain() (unit Unit, ok bool, err error) {
 	unit = Unit{
 		Name:  "arg-main",
 		Group: DefaultGroup,
-		Kind:  "daemon",
+		Kind:  KindDaemon,
 		ExecuteOptions: ExecuteOptions{
 			Command: args,
 		},
@@ -106,9 +106,9 @@ func LoadEnvMain() (unit Unit, ok bool, err error) {
 	if group == "" {
 		group = DefaultGroup
 	}
-	kind := "daemon"
+	kind := KindDaemon
 	if once, _ := strconv.ParseBool(strings.TrimSpace(os.Getenv("MINIT_MAIN_ONCE"))); once {
-		kind = "once"
+		kind = KindOnce
 		return
 	}
 	var command []string

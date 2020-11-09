@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+const KindLogrotate = "logrotate"
+
 // filename mark
 // daily: FILENAME.ROT2020-06-02.EXT
 // filesize: FILENAME.ROT000000000001.EXT (%012d)

@@ -20,31 +20,31 @@ type RunnerFactory struct {
 
 var (
 	RunnerFactories = map[string]*RunnerFactory{
-		"render": {
+		KindRender: {
 			Level: RunnerL1,
 			Create: func(unit Unit, logger *mlog.Logger) (Runner, error) {
 				return NewRenderRunner(unit, logger)
 			},
 		},
-		"once": {
+		KindOnce: {
 			Level: RunnerL2,
 			Create: func(unit Unit, logger *mlog.Logger) (Runner, error) {
 				return NewOnceRunner(unit, logger)
 			},
 		},
-		"daemon": {
+		KindDaemon: {
 			Level: RunnerL3,
 			Create: func(unit Unit, logger *mlog.Logger) (Runner, error) {
 				return NewDaemonRunner(unit, logger)
 			},
 		},
-		"cron": {
+		KindCron: {
 			Level: RunnerL3,
 			Create: func(unit Unit, logger *mlog.Logger) (Runner, error) {
 				return NewCronRunner(unit, logger)
 			},
 		},
-		"logrotate": {
+		KindLogrotate: {
 			Level: RunnerL3,
 			Create: func(unit Unit, logger *mlog.Logger) (Runner, error) {
 				return NewLogrotateRunner(unit, logger)

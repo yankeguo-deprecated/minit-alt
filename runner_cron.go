@@ -7,6 +7,8 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+const KindCron = "cron"
+
 type CronRunner struct {
 	Unit
 	logger *mlog.Logger

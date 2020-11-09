@@ -6,6 +6,8 @@ import (
 	"github.com/acicn/minit/pkg/mlog"
 )
 
+const KindOnce = "once"
+
 type OnceRunner struct {
 	Unit
 	logger *mlog.Logger

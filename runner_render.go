@@ -13,6 +13,8 @@ import (
 	"text/template"
 )
 
+const KindRender = "render"
+
 type RenderRunner struct {
 	Unit
 	logger *mlog.Logger
