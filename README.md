@@ -258,7 +258,10 @@ MINIT_SYSCTL=vm.max_map_count=262144,vm.swappiness=60
 * `MINIT_WEBDAV_PORT` 指定 `WebDAV` 服务的端口，默认为 `7486`
 * `MINIT_WEBDAV_USERNAME` 和 `MINIT_WEBDAV_PASSWORD` 指定 `WebDAV` 服务的用户密码，默认不设置用户密码
 
+## 展示自述文件
+
+如果把一个文件放在 `/etc/banner.minit.txt` ，则 `minit` 在启动时会打印其内容
+
 ## 许可证
 
 Guo Y.K., MIT License
-

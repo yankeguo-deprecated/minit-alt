@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func SetupWebDAV() (err error) {
+func setupWebDAV() (err error) {
 	envRoot := strings.TrimSpace(os.Getenv("MINIT_WEBDAV_ROOT"))
 	if envRoot == "" {
 		return

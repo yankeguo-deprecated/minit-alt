@@ -65,6 +65,9 @@ func main() {
 		return
 	}
 
+	// 自述文件
+	setupBanner()
+
 	// 内核参数
 	if err = setupSysctl(); err != nil {
 		return
@@ -81,7 +84,7 @@ func main() {
 	}
 
 	// WebDAV
-	if err = SetupWebDAV(); err != nil {
+	if err = setupWebDAV(); err != nil {
 		return
 	}
 
