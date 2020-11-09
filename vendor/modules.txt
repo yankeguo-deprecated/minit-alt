@@ -1,0 +1,19 @@
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/robfig/cron/v3 v3.0.1
+github.com/robfig/cron/v3
+# github.com/stretchr/testify v1.6.1
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
+# golang.org/x/net v0.0.0-20201031054903-ff519b6c9102
+golang.org/x/net/webdav
+golang.org/x/net/webdav/internal/xml
+# golang.org/x/sys v0.0.0-20201107080550-4d91cf3a1aaf
+golang.org/x/sys/internal/unsafeheader
+golang.org/x/sys/unix
+# gopkg.in/yaml.v2 v2.3.0
+gopkg.in/yaml.v2
+# gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
+gopkg.in/yaml.v3

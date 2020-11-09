@@ -1,0 +1,25 @@
+name: echo
+kind: once
+command:
+  - echo
+  - once
+  - $HOME
+---
+name: sleep
+kind: daemon
+count: 3
+command:
+  - sleep
+  - 5
+---
+name: echo-cron
+kind: cron
+cron: "@every 10s"
+command:
+  - echo
+  - cron
+---
+name: render-test
+kind: render
+files:
+  - testdata/conf/*.conf
