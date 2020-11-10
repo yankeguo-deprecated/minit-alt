@@ -17,10 +17,6 @@ func setupBanner() {
 	}
 	lines := bytes.Split(buf, []byte{'\n'})
 	for _, line := range lines {
-		line = bytes.TrimSpace(line)
-		if len(line) == 0 {
-			continue
-		}
 		log.Print(string(line))
 	}
 	return
