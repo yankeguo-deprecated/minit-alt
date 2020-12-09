@@ -122,6 +122,7 @@ func LoadEnvMain() (unit Unit, ok bool, err error) {
 		ExecuteOptions: ExecuteOptions{
 			Command: command,
 			Dir:     strings.TrimSpace(os.Getenv("MINIT_MAIN_DIR")),
+			Charset: strings.TrimSpace(os.Getenv("MINIT_MAIN_CHARSET")),
 		},
 	}
 	ok = true

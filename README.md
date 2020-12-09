@@ -11,7 +11,7 @@
 使用多阶段 Dockerfile 来从上述镜像地址导入 `minit` 可执行程序
 
 ```dockerfile
-FROM acicn/minit:1.5.0 AS minit
+FROM acicn/minit:1.5.2 AS minit
 
 FROM xxxxxxx
 
@@ -135,6 +135,15 @@ CMD ["/minit"]
         - touch
         - xlog.reopen.txt
     ```
+  
+## 日志字符集转换
+
+上述所有配置单元，均可以追加 `charset` 字段，会将命令输出的日志，从其他字符集转义到 `utf-8`
+
+当前支持
+
+* `gbk18030`
+* `gbk`
 
 ## 使用 `Shell`
 
@@ -165,6 +174,7 @@ MINIT_MAIN_DIR=/work
 MINIT_MAIN_NAME=main-program
 MINIT_MAIN_GROUP=super-main
 MINIT_MAIN_ONCE=false
+MINIT_MAIN_CHARSET=gbk18030
 ```
 
 **使用命令行参数创建单元**

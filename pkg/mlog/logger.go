@@ -24,27 +24,45 @@ var (
 	loggerNow = time.Now
 )
 
+type LoggerOptions struct {
+	Dir      string
+	Name     string
+	Filename string
+}
+
 type Logger struct {
 	namePrefix []byte
+
+	outFile *LogFile
+	errFile *LogFile
 
 	out io.Writer
 	err io.Writer
 }
 
-func NewLogger(dir, name, filename string) (logger *Logger, err error) {
+func NewLogger(opts LoggerOptions) (logger *Logger, err error) {
 	logger = &Logger{
-		namePrefix: []byte(" [" + name + "] "),
+		namePrefix: []byte(" [" + opts.Name + "] "),
 	}
-	var outFile, errFile *LogFile
-	if outFile, err = NewLogFile(dir, filename+".out", 64*1024*1024, 5); err != nil {
+	if logger.outFile, err = NewLogFile(opts.Dir, opts.Filename+".out", 64*1024*1024, 5); err != nil {
 		return
 	}
-	if errFile, err = NewLogFile(dir, filename+".err", 64*1024*1024, 5); err != nil {
+	if logger.errFile, err = NewLogFile(opts.Dir, opts.Filename+".err", 64*1024*1024, 5); err != nil {
 		return
 	}
-	logger.out = io.MultiWriter(os.Stdout, outFile)
-	logger.err = io.MultiWriter(os.Stderr, errFile)
+	logger.out = io.MultiWriter(os.Stdout, logger.outFile)
+	logger.err = io.MultiWriter(os.Stderr, logger.errFile)
 	return
+}
+
+func (l *Logger) Close() error {
+	if l.outFile != nil {
+		_ = l.outFile.Close()
+	}
+	if l.errFile != nil {
+		_ = l.errFile.Close()
+	}
+	return nil
 }
 
 func (l *Logger) Print(items ...interface{}) {

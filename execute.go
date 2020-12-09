@@ -4,11 +4,20 @@ import (
 	"fmt"
 	"github.com/acicn/minit/pkg/mlog"
 	"github.com/acicn/minit/pkg/shellquote"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/simplifiedchinese"
 	"io"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
+)
+
+var (
+	knownCharsets = map[string]encoding.Encoding{
+		"gb18030": simplifiedchinese.GB18030,
+		"gbk":     simplifiedchinese.GBK,
+	}
 )
 
 var (
@@ -20,6 +29,7 @@ type ExecuteOptions struct {
 	Dir     string   `yaml:"dir"`     // 所有涉及命令执行的单元，指定命令执行时的当前目录
 	Shell   string   `yaml:"shell"`   // 使用 shell 来执行命令，比如 'bash'
 	Command []string `yaml:"command"` // 所有涉及命令执行的单元，指定命令执行的内容
+	Charset string   `yaml:"charset"` // output charset
 }
 
 func addPid(pid int) {
@@ -62,7 +72,7 @@ func execute(opts ExecuteOptions, logger *mlog.Logger) (err error) {
 	}
 
 	// 构建 cmd
-	var outPipe, errPipe io.ReadCloser
+	var outPipe, errPipe io.Reader
 	cmd := exec.Command(argv[0], argv[1:]...)
 	if opts.Shell != "" {
 		cmd.Stdin = strings.NewReader(strings.Join(opts.Command, "\n"))
@@ -76,6 +86,17 @@ func execute(opts ExecuteOptions, logger *mlog.Logger) (err error) {
 	}
 	if errPipe, err = cmd.StderrPipe(); err != nil {
 		return
+	}
+
+	// charset
+	if opts.Charset != "" {
+		enc := knownCharsets[strings.ToLower(opts.Charset)]
+		if enc == nil {
+			logger.Error("未知字符集: " + opts.Charset)
+		} else {
+			outPipe = enc.NewDecoder().Reader(outPipe)
+			errPipe = enc.NewDecoder().Reader(errPipe)
+		}
 	}
 
 	// 执行
