@@ -59,6 +59,19 @@ func notifyPIDs(sig os.Signal) {
 func execute(opts ExecuteOptions, logger *mlog.Logger) (err error) {
 	argv := make([]string, 0)
 
+	// 检查 opts.Dir
+	if opts.Dir != "" {
+		var info os.FileInfo
+		if info, err = os.Stat(opts.Dir); err != nil {
+			err = fmt.Errorf("无法访问指定的 dir, 请检查: %s", err.Error())
+			return
+		}
+		if !info.IsDir() {
+			err = fmt.Errorf("指定的 dir 不是目录: %s", opts.Dir)
+			return
+		}
+	}
+
 	// 构建 argv
 	if opts.Shell != "" {
 		if argv, err = shellquote.Split(opts.Shell); err != nil {
