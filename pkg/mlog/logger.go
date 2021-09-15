@@ -31,84 +31,100 @@ type LoggerOptions struct {
 }
 
 type Logger struct {
-	namePrefix []byte
+	namePrefix string
 
-	outFile *LogFile
-	errFile *LogFile
+	fileOut *LogFile
+	fileErr *LogFile
 
-	out io.Writer
-	err io.Writer
+	consoleOut io.Writer
+	consoleErr io.Writer
 }
 
 func NewLogger(opts LoggerOptions) (logger *Logger, err error) {
 	logger = &Logger{
-		namePrefix: []byte(" [" + opts.Name + "] "),
+		namePrefix: " [" + opts.Name + "] ",
 	}
-	if logger.outFile, err = NewLogFile(opts.Dir, opts.Filename+".out", 64*1024*1024, 5); err != nil {
+	if logger.fileOut, err = NewLogFile(opts.Dir, opts.Filename+".out", 64*1024*1024, 5); err != nil {
 		return
 	}
-	if logger.errFile, err = NewLogFile(opts.Dir, opts.Filename+".err", 64*1024*1024, 5); err != nil {
+	if logger.fileErr, err = NewLogFile(opts.Dir, opts.Filename+".err", 64*1024*1024, 5); err != nil {
 		return
 	}
-	logger.out = io.MultiWriter(os.Stdout, logger.outFile)
-	logger.err = io.MultiWriter(os.Stderr, logger.errFile)
+	logger.consoleOut = os.Stdout
+	logger.consoleErr = os.Stderr
 	return
 }
 
 func (l *Logger) Close() error {
-	if l.outFile != nil {
-		_ = l.outFile.Close()
+	if l.fileOut != nil {
+		_ = l.fileOut.Close()
 	}
-	if l.errFile != nil {
-		_ = l.errFile.Close()
+	if l.fileErr != nil {
+		_ = l.fileErr.Close()
 	}
 	return nil
 }
 
 func (l *Logger) Print(items ...interface{}) {
-	appendLogLine(l.namePrefix, append([]byte(fmt.Sprint(items...)), '\n'), l.out)
+	l.AppendOut(append([]byte(fmt.Sprint(items...)), '\n'))
 }
 
 func (l *Logger) Error(items ...interface{}) {
-	appendLogLine(l.namePrefix, append([]byte(fmt.Sprint(items...)), '\n'), l.err)
+	l.AppendErr(append([]byte(fmt.Sprint(items...)), '\n'))
 }
 
 func (l *Logger) Printf(pattern string, items ...interface{}) {
-	appendLogLine(l.namePrefix, append([]byte(fmt.Sprintf(pattern, items...)), '\n'), l.out)
+	l.AppendOut(append([]byte(fmt.Sprintf(pattern, items...)), '\n'))
 }
 
 func (l *Logger) Errorf(pattern string, items ...interface{}) {
-	appendLogLine(l.namePrefix, append([]byte(fmt.Sprintf(pattern, items...)), '\n'), l.err)
+	l.AppendErr(append([]byte(fmt.Sprintf(pattern, items...)), '\n'))
 }
 
 func (l *Logger) StreamOut(r io.Reader) {
-	streamLogLine(l.namePrefix, r, l.out)
-}
-
-func (l *Logger) StreamErr(r io.Reader) {
-	streamLogLine(l.namePrefix, r, l.err)
-}
-
-func appendLogLine(name, b []byte, w io.Writer) {
-	buf := loggerBuffers.Get().(*bytes.Buffer)
-	buf.WriteString(loggerNow().Format(LoggerDateLayout))
-	buf.Write(name)
-	buf.Write(b)
-	_, _ = w.Write(buf.Bytes())
-	buf.Reset()
-	loggerBuffers.Put(buf)
-}
-func streamLogLine(name []byte, r io.Reader, w io.Writer) {
 	br := bufio.NewReader(r)
 	for {
 		b, err := br.ReadBytes('\n')
 		if err == nil {
-			appendLogLine(name, b, w)
+			l.AppendOut(b)
 		} else {
 			if len(b) != 0 {
-				appendLogLine(name, append(b, '\n'), w)
+				l.AppendOut(append(b, '\n'))
 			}
 			break
 		}
 	}
+}
+
+func (l *Logger) StreamErr(r io.Reader) {
+	br := bufio.NewReader(r)
+	for {
+		b, err := br.ReadBytes('\n')
+		if err == nil {
+			l.AppendErr(b)
+		} else {
+			if len(b) != 0 {
+				l.AppendErr(append(b, '\n'))
+			}
+			break
+		}
+	}
+}
+
+func (l *Logger) AppendOut(b []byte) {
+	bc, bf := l.FormatLine(b)
+	_, _ = l.consoleOut.Write(bc)
+	_, _ = l.fileOut.Write(bf)
+}
+
+func (l *Logger) AppendErr(b []byte) {
+	bc, bf := l.FormatLine(b)
+	_, _ = l.consoleErr.Write(bc)
+	_, _ = l.fileErr.Write(bf)
+}
+
+func (l *Logger) FormatLine(b []byte) (bufConsole []byte, bufFile []byte) {
+	bufFile = b
+	bufConsole = append([]byte(loggerNow().Format(LoggerDateLayout)+l.namePrefix), b...)
+	return
 }

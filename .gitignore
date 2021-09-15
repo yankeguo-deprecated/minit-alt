@@ -19,3 +19,10 @@
 
 # Binary
 /minit
+
+# Log
+*.log
+
+# macOS
+.DS_Store
+._*
